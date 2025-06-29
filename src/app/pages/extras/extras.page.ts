@@ -1,4 +1,4 @@
-import { Component} from '@angular/core';
+import { Component, OnInit} from '@angular/core';
 import { RecetasService } from 'src/app/services/recetas.service';
 
 //Modal
@@ -15,13 +15,14 @@ export class ExtrasPage {
 
   recetas: any[] = [];
 
-  constructor(private comidaService: RecetasService, private modalCtrl: ModalController) {}
+  constructor(private recetasService: RecetasService, private modalCtrl: ModalController) {}
 
   ngOnInit() {
-    this.comidaService.buscarRecetas('healthy').subscribe(data => {
-      this.recetas = data.meals || [];
+    this.recetasService.getRecetas().subscribe(data => {
+      this.recetas = data;
     });
   }
+
 
   async abrirLogros() {
   const modal = await this.modalCtrl.create({

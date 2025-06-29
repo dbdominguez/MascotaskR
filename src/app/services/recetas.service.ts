@@ -1,16 +1,29 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Storage } from '@ionic/storage-angular';
+import { Observable, catchError, tap, from, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RecetasService {
-  private baseUrl = 'https://www.themealdb.com/api/json/v1/1';
+  private apiUrl = 'https://www.themealdb.com/api/json/v1/1/search.php?s=salad';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private storage: Storage) {}
 
-  buscarRecetas(termino: string): Observable<any> {
-    return this.http.get(`${this.baseUrl}/search.php?s=${termino}`);
+  getRecetas(): Observable<any[]> {
+    return this.http.get<any[]>(this.apiUrl).pipe(
+      tap(async (data) => {
+        await this.storage.set('recetasCache', data);
+      }),
+      catchError((error: HttpErrorResponse): Observable<any[]> => {
+        console.warn('⚠️ Error al llamar al API, usando datos cache:', error.status);
+
+        // Convertimos la promesa del storage a Observable con `from`
+        return from(
+          this.storage.get('recetasCache').then((cache) => cache || [])
+        );
+      })
+    );
   }
 }
