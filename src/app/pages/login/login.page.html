@@ -1,0 +1,37 @@
+<ion-content class="ion-padding">
+  
+  <!-- Parte Superior -->
+  <div class="ion-text-center encabezado">
+    <h1 class="titulo-principal">Mascotask</h1>
+    <img src="assets/icon/mascotasklogo.png" class="logo-app" alt="Perfil">
+    <h2 class="bienvenida">¡Bienvenido!</h2>
+  </div>
+
+  <!-- Datos login -->
+  <form [formGroup]="loginForm" (ngSubmit)="ingresar()">
+
+    <ion-item>
+      <ion-label position="floating">Email</ion-label>
+      <ion-input formControlName="email" type="text"></ion-input>
+    </ion-item>
+    <ion-note color="danger" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+      Ingresar email válido
+    </ion-note>
+
+    <ion-item>
+      <ion-label position="floating">Contraseña</ion-label>
+      <ion-input formControlName="clave" type="password"></ion-input>
+    </ion-item>
+    <ion-note color="danger" *ngIf="loginForm.get('clave')?.invalid && loginForm.get('clave')?.touched">
+      Ingresar contraseña alfanumérica que contenga entre 8 a 12 carácteres
+    </ion-note>
+
+    <div class="ion-text-center encabezado">
+      <ion-button expand="full" type="submit" color="secondary">Ingresar</ion-button>
+      <a target="_blank" rel="noopener noreferrer" href="">¿No tienes cuenta? Entra aquí</a>
+    </div>
+  </form>
+
+  <!-- Falta añadir crear cuenta -->
+
+</ion-content>

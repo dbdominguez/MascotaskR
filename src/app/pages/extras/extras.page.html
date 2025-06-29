@@ -1,0 +1,38 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Extras</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <!-- Recetas -->
+  <ion-card color="light">
+    <ion-card-header>
+      <ion-card-title>🥗 Recetas Saludables</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="12" sizeMd="6" sizeLg="4" *ngFor="let receta of recetas">
+            <ion-card>
+              <img [src]="receta.strMealThumb" />
+              <ion-card-header>
+                <ion-card-title>{{ receta.strMeal }}</ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <p><strong>Origen:</strong> {{ receta.strArea }}</p>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Logros -->
+  <ion-button expand="block" color="secondary" (click)="abrirLogros()">
+    🏆 Logros 
+  </ion-button>
+
+</ion-content>

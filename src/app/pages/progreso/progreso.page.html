@@ -1,0 +1,54 @@
+<!-- Titulo -->
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Progreso</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content class="ion-padding">
+
+  <!-- Resumen general -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Resumen Semanal</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item>
+          <ion-label>Total hábitos programados</ion-label>
+          <ion-badge slot="end" color="medium">{{ resumen.total }}</ion-badge>
+        </ion-item>
+        <ion-item>
+          <ion-label>Hábitos cumplidos</ion-label>
+          <ion-badge slot="end" color="success">{{ resumen.cumplidos }}</ion-badge>
+        </ion-item>
+        <ion-item>
+          <ion-label>Porcentaje</ion-label>
+          <ion-badge slot="end" color="primary">{{ resumen.porcentaje }}%</ion-badge>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Progreso por día -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Historial Diario</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list *ngFor="let dia of historial">
+        <ion-item>
+          <ion-label>
+            <h3>{{ dia.fecha }}</h3>
+            <p>{{ dia.cumplidos }} de {{ dia.total }} hábitos completados</p>
+          </ion-label>
+          <ion-badge [color]="dia.cumplidos === dia.total ? 'success' : 'warning'" slot="end">
+            {{ ((dia.cumplidos / dia.total) * 100) | number: '1.0-0' }}%
+          </ion-badge>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>

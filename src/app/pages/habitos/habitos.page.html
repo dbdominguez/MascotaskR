@@ -1,0 +1,84 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Agenda de Hábitos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <ion-button expand="block" (click)="abrirFormulario()">
+    ➕ Agregar nuevo hábito
+  </ion-button>
+
+  <!-- Lista agrupada por categoría -->
+  <ng-container *ngFor="let categoria of categorias">
+    <ion-list *ngIf="filtrarPorCategoria(categoria).length > 0">
+      <ion-item-divider color="light">
+        <ion-label>{{ categoria }}</ion-label>
+      </ion-item-divider>
+
+      <ion-item *ngFor="let habito of filtrarPorCategoria(categoria); let i = index">
+        <ion-label>
+          <h2>{{ habito.nombre }}</h2>
+          <p>Días: {{ habito.dias.join(', ') }} - Hora: {{ habito.hora }}</p>
+        </ion-label>
+        <ion-buttons slot="end">
+          <ion-button fill="clear" color="primary" (click)="editarHabito(habito, i)">
+            <ion-icon name="create-outline"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" color="danger" (click)="eliminarHabito(i)">
+            <ion-icon name="trash-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-item>
+    </ion-list>
+  </ng-container>
+
+  <!-- Modal de creación/edición -->
+  <ion-modal [isOpen]="formularioVisible" (didDismiss)="formularioVisible = false">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>{{ modoEdicion ? 'Editar Hábito' : 'Nuevo Hábito' }}</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="formularioVisible = false">Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <ion-item>
+          <ion-label position="floating">Nombre del hábito</ion-label>
+          <ion-input [(ngModel)]="nuevoHabito.nombre"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Categoría</ion-label>
+          <ion-select [(ngModel)]="nuevoHabito.categoria">
+            <ion-select-option *ngFor="let cat of categorias" [value]="cat">{{ cat }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Días</ion-label>
+          <ion-select multiple interface="popover" [(ngModel)]="nuevoHabito.dias">
+            <ion-select-option *ngFor="let dia of diasSemana" [value]="dia">{{ dia }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Hora</ion-label>
+          <ion-datetime presentation="time" [(ngModel)]="nuevoHabito.hora"></ion-datetime>
+        </ion-item>
+
+        <ion-button expand="block" (click)="guardarHabito()">
+          {{ modoEdicion ? 'Actualizar' : 'Guardar' }}
+        </ion-button>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <div *ngIf="mostrarAnimacion" class="animate__animated animate__tada mensaje-agregado mos-animacion">
+    ✅ ¡Nuevo hábito agregado!
+  </div>
+</ion-content>
+

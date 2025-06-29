@@ -1,0 +1,39 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Tu Mascota</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding mascota-content">
+
+  <!-- ZONA PRINCIPAL MASCOTA -->
+  <div class="mascota-zona-principal">
+    <img [src]="imagenMascota" class="mascota-grande" alt="Mascota">
+    <h2 class="nombre-mascota">{{ nombreMascota }}</h2>
+  </div>
+
+  <!-- ESTADO DE LA MASCOTA -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Estado de {{ nombreMascota }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item>
+          <ion-label>Felicidad</ion-label>
+          <ion-progress-bar value="0.7" color="success"></ion-progress-bar>
+        </ion-item>
+        <ion-item>
+          <ion-label>Energía</ion-label>
+          <ion-progress-bar value="0.5" color="warning"></ion-progress-bar>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- INTERACCIÓN -->
+  <ion-button expand="block" color="tertiary" (click)="proximamente()">
+    🐾 ¡Tienda!
+  </ion-button>
+
+</ion-content>

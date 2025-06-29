@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Storage } from '@ionic/storage-angular';
 
 @Component({
   selector: 'app-root',
@@ -7,5 +8,11 @@ import { Component } from '@angular/core';
   standalone: false,
 })
 export class AppComponent {
-  constructor() {}
+  private _storage: Storage | null = null;
+
+  constructor(private storage: Storage) {}
+
+  async ngOnInit() {
+    this._storage = await this.storage.create();
+  }
 }

@@ -1,0 +1,70 @@
+<!-- Parte superior -->
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button id="misiones-alert">
+        <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
+      </ion-button>
+      <ion-alert trigger="misiones-alert" header="Misiones Diarias" subHeader="¡Sigue así!" [buttons]="alertButtons" [inputs]="alertInputs"></ion-alert>
+    </ion-buttons>
+
+    <ion-title class="titulo-home">
+      <h2>¡Bienve-meow!</h2>
+    </ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="goToPerfil()">
+        <ion-icon slot="icon-only" name="person-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<!-- Parte central -->
+<ion-content class="ion-padding home-content">
+
+  <!-- ZONA 1: Mascota -->
+  <div class="zona-mascota">
+    <img src="assets/background/background0.jpg" class="fondo-mascota" alt="Habitación mascota" />
+    <img [src]="imagenMascota" class="imagen-mascota" alt="Mascota" />
+  </div>
+
+  <!-- ZONA 2: Ventana de diálogo -->
+  <div class="zona-dialogo">
+    <ion-card class="dialogo-mascota animacion-fade">
+      <div class="nombre-mascota">
+        <div class="mascota-estado">
+          <span>{{ nombreMascota }}</span>
+          <ion-progress-bar [value]="estadoMascota / 100" color="tertiary"></ion-progress-bar>
+        </div>
+      </div>
+      <ion-card-content class="ion-text-center">
+        😸: {{ fraseActual }}
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- ZONA 3: Lista de hábitos -->
+  <div class="zona-habitos">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Hábitos de hoy</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list *ngIf="habitosHoy.length > 0; else noHabitos">
+          <ion-item *ngFor="let habito of habitosHoy">
+            <ion-label>{{ habito.nombre }}</ion-label>
+            <ion-checkbox slot="end" [(ngModel)]="habito.completado" (ionChange)="guardarProgreso()" [disabled]="progresoGuardado"></ion-checkbox>
+          </ion-item>
+        </ion-list>
+        <ng-template #noHabitos>
+          <p class="ion-text-center">No hay hábitos programados para hoy.</p>
+        </ng-template>
+      </ion-card-content>
+    </ion-card>
+    <ion-button expand="block" color="success" (click)="guardarResumenDelDia()">
+      Guardar progreso de hoy
+    </ion-button>
+  </div>
+
+</ion-content>

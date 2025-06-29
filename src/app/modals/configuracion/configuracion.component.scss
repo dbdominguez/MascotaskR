@@ -1,0 +1,30 @@
+:host {
+  ion-header {
+    border-radius: 16px 16px 0 0;
+  }
+
+  ion-toolbar {
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    background-color: #f8f8f8;
+    color: #333;
+  }
+
+  ion-content {
+    border-radius: 0 0 16px 16px;
+    background: #ffffff;
+  }
+
+  ion-item {
+    border-radius: 8px;
+    margin-bottom: 12px;
+    --padding-start: 12px;
+    --padding-end: 12px;
+  }
+
+  ion-button {
+    margin-top: 16px;
+    border-radius: 10px;
+  }
+  
+}

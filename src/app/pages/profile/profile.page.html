@@ -1,0 +1,52 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Mi Perfil</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <div class="ion-text-center">
+    <ion-avatar class="perfil-avatar" (click)="tomarFoto()">
+      <img *ngIf="fotoPerfil; else imagenDefecto" [src]="fotoPerfil" />
+    </ion-avatar>
+
+    <ng-template #imagenDefecto>
+      <img src="../../assets/icon/profileicon.png" alt="Perfil" />
+    </ng-template>
+
+    <ion-text color="medium" class="text-sm">Toca la imagen para actualizar tu foto</ion-text>
+
+    <h2 class="ion-text-center">{{ perfil.nombre }}</h2>
+
+    <ion-card class="ion-text-center" *ngIf="perfil.fechaNacimiento || perfil.correo">
+      <ion-card-content>
+        <p *ngIf="perfil.fechaNacimiento">🎂 Fecha de nacimiento: {{ perfil.fechaNacimiento | date: 'dd/MM/yyyy' }}</p>
+        <p *ngIf="perfil.genero">🧑 Género: {{ perfil.genero }}</p>
+        <p *ngIf="perfil.correo">📧 Correo: {{ perfil.correo }}</p>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Resto del menú -->
+  <ion-list>
+    <ion-item button (click)="abrirEditarPerfil()">
+      <ion-label>Editar perfil</ion-label>
+      <ion-icon name="create-outline" slot="end"></ion-icon>
+    </ion-item>
+
+    <ion-item button (click)="abrirConfiguracion()">
+      <ion-label>Configuración</ion-label>
+      <ion-icon name="settings-outline" slot="end"></ion-icon>
+    </ion-item>
+
+    <ion-item button (click)="abrirCerrarSesion()">
+      <ion-label>Cerrar sesión</ion-label>
+      <ion-icon name="log-out-outline" slot="end"></ion-icon>
+    </ion-item>
+  </ion-list>
+
+</ion-content>

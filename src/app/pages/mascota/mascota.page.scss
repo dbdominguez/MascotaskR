@@ -1,0 +1,33 @@
+ion-content {
+  --background: transparent;
+
+  background-image: url('/assets/background/background3.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 0;
+  
+}
+
+
+.mascota-content {
+  background-color: #fefcf7;
+}
+
+.mascota-zona-principal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.mascota-grande {
+  width: 180px;
+  height: auto;
+}
+
+.nombre-mascota {
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin-top: 10px;
+}
