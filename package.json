@@ -13,8 +13,8 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "^20.0.0",
-    "@angular/common": "^20.0.0",
+    "@angular/animations": "^20.0.5",
+    "@angular/common": "^20.0.5",
     "@angular/compiler": "^20.0.0",
     "@angular/core": "^20.0.0",
     "@angular/forms": "^20.0.0",
@@ -24,6 +24,7 @@
     "@capacitor-community/sqlite": "^7.0.0",
     "@capacitor/android": "^7.4.0",
     "@capacitor/app": "7.0.1",
+    "@capacitor/camera": "^7.0.1",
     "@capacitor/core": "7.4.0",
     "@capacitor/haptics": "7.0.1",
     "@capacitor/keyboard": "7.0.1",
