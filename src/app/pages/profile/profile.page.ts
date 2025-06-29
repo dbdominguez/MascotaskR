@@ -5,7 +5,7 @@ import { ConfiguracionComponent } from 'src/app/modals/configuracion/configuraci
 import { CerrarSesionComponent } from 'src/app/modals/cerrar-sesion/cerrar-sesion.component';
 
 //Camara
-import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { Camera, CameraResultType, CameraSource} from '@capacitor/camera';
 
 @Component({
   selector: 'app-profile',
