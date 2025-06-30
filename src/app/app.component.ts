@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { SqliteService } from './services/sqlite.service';
 import { Storage } from '@ionic/storage-angular';
 
 @Component({
@@ -10,9 +11,10 @@ import { Storage } from '@ionic/storage-angular';
 export class AppComponent {
   private _storage: Storage | null = null;
 
-  constructor(private storage: Storage) {}
+  constructor(private storage: Storage, private sqliteService: SqliteService) {}
 
   async ngOnInit() {
-    this._storage = await this.storage.create();
+    await this.storage.create();
+    await this.sqliteService.initDB();
   }
 }

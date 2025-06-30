@@ -12,6 +12,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { IonicStorageModule } from '@ionic/storage-angular';
 //API
 import { provideHttpClient } from '@angular/common/http';
+//Guard
+import { AuthGuard } from './guards/authen.guard';
 
 
 // Importar modales
@@ -19,6 +21,7 @@ import { EditarPerfilComponent } from './modals/editar-perfil/editar-perfil.comp
 import { ConfiguracionComponent } from './modals/configuracion/configuracion.component';
 import { CerrarSesionComponent } from './modals/cerrar-sesion/cerrar-sesion.component';
 import { LogrosComponent } from './modals/logros/logros.component';
+import { DetalleComidaComponent } from 'src/app/modals/detalle-comida/detalle-comida.component';
 import { FormsModule } from '@angular/forms';
 
 @NgModule({
@@ -27,7 +30,8 @@ import { FormsModule } from '@angular/forms';
     EditarPerfilComponent,
     ConfiguracionComponent,
     CerrarSesionComponent,
-    LogrosComponent
+    LogrosComponent,
+    DetalleComidaComponent
   ],
   imports: [
     BrowserModule,
@@ -37,7 +41,7 @@ import { FormsModule } from '@angular/forms';
     BrowserAnimationsModule,
     IonicStorageModule.forRoot()
   ],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, provideHttpClient()],
+  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, provideHttpClient(), AuthGuard],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

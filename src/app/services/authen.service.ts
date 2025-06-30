@@ -5,12 +5,12 @@ import { Storage } from '@ionic/storage-angular';
   providedIn: 'root'
 })
 export class AuthenService {
-  private readonly STORAGE_KEY = 'usuario_activo';
+  private STORAGE_KEY = 'usuario';
 
   constructor(private storage: Storage) {}
 
-  async login(email: string): Promise<void> {
-    await this.storage.set(this.STORAGE_KEY, email);
+  async login(correo: string): Promise<void> {
+    await this.storage.set(this.STORAGE_KEY, { correo });
   }
 
   async logout(): Promise<void> {
