@@ -54,7 +54,7 @@
         <ion-list *ngIf="habitosHoy.length > 0; else noHabitos">
           <ion-item *ngFor="let habito of habitosHoy">
             <ion-label>{{ habito.nombre }}</ion-label>
-            <ion-checkbox slot="end" [(ngModel)]="habito.completado" (ionChange)="guardarProgreso()" [disabled]="progresoGuardado"></ion-checkbox>
+            <ion-checkbox slot="end" [(ngModel)]="habito.completado" [disabled]="habito.bloqueado"></ion-checkbox>
           </ion-item>
         </ion-list>
         <ng-template #noHabitos>

@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { SqliteService } from 'src/app/services/sqlite.service';
 
 @Component({
   selector: 'app-progreso',
@@ -8,30 +9,49 @@ import { Component } from '@angular/core';
 })
 export class ProgresoPage {
   historial: any[] = [];
-  resumen = {
-    total: 0,
-    cumplidos: 0,
-    porcentaje: 0
-  };
+  promedioCumplimiento: number = 0;
+  diasCompletos: number = 0;
 
-  //Cargar localstorage
-  ionViewWillEnter() {
-  this.cargarHistorial();
-  this.calcularResumen();
+  constructor(private sqliteService: SqliteService) {}
+
+  //Cargar sql
+  async ionViewWillEnter() {
+    this.historial = await this.sqliteService.obtenerHistorialProgreso();
+
+    // Calcular resumen estadístico
+    if (this.historial.length > 0) {
+      let sumaPorcentaje = 0;
+      let dias100 = 0;
+
+      this.historial.forEach(entry => {
+        const porcentaje = (entry.cumplidos / entry.total) * 100;
+        sumaPorcentaje += porcentaje;
+        if (porcentaje === 100) dias100++;
+      });
+
+      this.promedioCumplimiento = Math.round(sumaPorcentaje / this.historial.length);
+      this.diasCompletos = dias100;
+    }
   }
 
-  //Cargar historial
-  cargarHistorial() {
-    const data = JSON.parse(localStorage.getItem('historialHabitos') || '[]');
-    this.historial = data;
-  }
+  
+//Modo debug usar false para desactivar
+  modoDebug = true; 
 
-  //Calcular resumen
-  calcularResumen() {
-    const total = this.historial.reduce((acc, d) => acc + d.total, 0);
-    const cumplidos = this.historial.reduce((acc, d) => acc + d.cumplidos, 0);
-    const porcentaje = total > 0 ? Math.round((cumplidos / total) * 100) : 0;
+  async mostrarToast(mensaje: string) {
+  const toast = document.createElement('ion-toast');
+  toast.message = mensaje;
+  toast.duration = 1500;
+  toast.color = 'warning';
+  document.body.appendChild(toast);
+  await toast.present();
+}
 
-    this.resumen = { total, cumplidos, porcentaje };
-  }
+async resetProgreso() {
+  await this.sqliteService.borrarProgresoDiario();
+  this.historial = [];
+  this.promedioCumplimiento = 0;
+  this.diasCompletos = 0;
+  this.mostrarToast('🚫 Progreso diario eliminado para pruebas');
+}
 }

@@ -1,4 +1,14 @@
 import { Component, OnInit } from '@angular/core';
+import { SqliteService } from 'src/app/services/sqlite.service';
+
+interface Habito {
+  id?: number;
+  nombre: string;
+  dias: string[];
+  hora: string;
+  categoria: string;
+  completado: boolean;
+}
 
 @Component({
   selector: 'app-habitos',
@@ -7,28 +17,38 @@ import { Component, OnInit } from '@angular/core';
   standalone: false,
 })
 export class HabitosPage {
+
+
+  constructor(private sqliteService: SqliteService, ) {}
+
+  
   formularioVisible = false;
   mostrarAnimacion = false;
+  
 
   categorias = ['❤️ Salud', '🍴 Alimentación', '💪 Ejercicio', '🎱 Otro'];
   diasSemana = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 
   habitosGuardados: any[] = [];
 
-  nuevoHabito = {
+  nuevoHabito: Habito = {
     nombre: '',
     dias: [],
     hora: '',
     categoria: '',
     completado: false
-  };
+};
 
   modoEdicion = false;
   indiceEdicion = -1;
 
-  ionViewWillEnter() {
-    const guardados = JSON.parse(localStorage.getItem('habitosHoy') || '[]');
-    this.habitosGuardados = guardados;
+  async ionViewWillEnter() {
+    const datos = await this.sqliteService.obtenerHabitosHoy();
+
+    this.habitosGuardados = datos.map(h => ({
+      ...h,
+      dias: h.dias ? h.dias.split(',') : [] 
+    }));
   }
 
   abrirFormulario() {
@@ -44,43 +64,48 @@ export class HabitosPage {
     this.formularioVisible = true;
   }
 
-  guardarHabito() {
-  const habitos = JSON.parse(localStorage.getItem('habitosHoy') || '[]');
+  async guardarHabito() {
+    if (!this.modoEdicion) {
+      const nuevo = {
+        nombre: this.nuevoHabito.nombre,
+        categoria: this.nuevoHabito.categoria,
+        hora: this.nuevoHabito.hora,
+        dias: this.nuevoHabito.dias,
+      };
+      await this.sqliteService.agregarHabito(nuevo);
+      this.mostrarAnimacion = true;
+      setTimeout(() => {
+        this.mostrarAnimacion = false;
+      }, 1500);
+    } else {
+      if (this.nuevoHabito.id) {
+        await this.sqliteService.editarHabito(this.nuevoHabito);
+      } else {
+        console.warn('No se pudo editar: hábito sin ID');
+      }
+    }
 
-  if (!this.modoEdicion) {
-    const nuevo = {
-      ...this.nuevoHabito,
-      id: Date.now(),
+    this.formularioVisible = false;
+    this.modoEdicion = false;
+    this.nuevoHabito = {
+      nombre: '',
+      dias: [],
+      hora: '',
+      categoria: '',
       completado: false
     };
-    habitos.push(nuevo);
-
-    // ✅ Activar animación
-    this.mostrarAnimacion = true;
-    setTimeout(() => {
-      this.mostrarAnimacion = false;
-    }, 1500);
-  } else {
-    habitos[this.indiceEdicion] = this.nuevoHabito;
+    await this.ionViewWillEnter();
   }
 
-  localStorage.setItem('habitosHoy', JSON.stringify(habitos));
-  this.formularioVisible = false;
-  this.ionViewWillEnter();
-}
-
-  editarHabito(habito: any, index: number) {
+  editarHabito(habito: Habito) {
     this.modoEdicion = true;
-    this.indiceEdicion = index;
     this.nuevoHabito = { ...habito };
     this.formularioVisible = true;
   }
 
-  eliminarHabito(index: number) {
-    const habitos = JSON.parse(localStorage.getItem('habitosHoy') || '[]');
-    habitos.splice(index, 1);
-    localStorage.setItem('habitosHoy', JSON.stringify(habitos));
-    this.ionViewWillEnter();
+  async eliminarHabito(id: number) {
+    await this.sqliteService.eliminarHabito(id);
+    await this.ionViewWillEnter();
   }
 
   filtrarPorCategoria(categoria: string): any[] {

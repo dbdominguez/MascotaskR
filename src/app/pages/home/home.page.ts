@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
+import { SqliteService } from 'src/app/services/sqlite.service';
 
 @Component({
   selector: 'app-home',
@@ -25,7 +26,7 @@ export class HomePage {
   frasesMascota: string[] = [];
 
 
-  constructor(private router: Router, private alertCtrl: AlertController, private toastCtrl: ToastController,) {}
+  constructor(private router: Router, private alertCtrl: AlertController, private toastCtrl: ToastController, private sqliteService: SqliteService) {}
 
 
   //Dia Actual
@@ -35,18 +36,23 @@ export class HomePage {
 }
 
 
-  //Para llamar al localstore
-  ionViewWillEnter() {
-  //Cargar habitos hoy
-  const todos = JSON.parse(localStorage.getItem('habitosHoy') || '[]');
-  const diaActual = this.getDiaActual();
-  this.habitosHoy = todos.filter((habito: any) =>
-    habito.dias && habito.dias.includes(diaActual)
-  );
 
-  const historial = JSON.parse(localStorage.getItem('historialHabitos') || '[]');
-  const hoy = new Date().toLocaleDateString();
-  this.progresoGuardado = historial.some((d: any) => d.fecha === hoy);
+  async ionViewWillEnter() {
+    const diaActual = this.getDiaActual();
+    const todos = await this.sqliteService.obtenerHabitosHoy();
+    const hoy = new Date().toLocaleDateString();
+
+    const yaGuardado = await this.sqliteService.progresoYaRegistrado(hoy);
+
+    this.habitosHoy = todos
+      .filter(h => h.dias?.includes(diaActual))
+      .map(h => ({
+        ...h,
+        bloqueado: yaGuardado,
+        completado: h.completado === 1 || h.completado === true 
+      }));
+
+    this.progresoGuardado = yaGuardado;
 
   //Cargar frases mascota
   const guardadas = JSON.parse(localStorage.getItem('frasesMascota') || '[]');
@@ -103,18 +109,21 @@ async guardarResumenDelDia() {
       },
       {
         text: 'Guardar',
-        handler: () => {
+        handler: async () => {
           const fechaHoy = new Date().toLocaleDateString();
           const total = this.habitosHoy.length;
           const cumplidos = this.habitosHoy.filter(h => h.completado).length;
 
-          const historial = JSON.parse(localStorage.getItem('historialHabitos') || '[]');
+          const yaExiste = await this.sqliteService.progresoYaRegistrado(fechaHoy);
 
-          const yaExiste = historial.find((d: any) => d.fecha === fechaHoy);
           if (!yaExiste) {
-            historial.push({ fecha: fechaHoy, total, cumplidos });
-            localStorage.setItem('historialHabitos', JSON.stringify(historial));
+            await this.sqliteService.guardarProgresoDiario(fechaHoy, total, cumplidos);
             this.progresoGuardado = true;
+
+            for (let habito of this.habitosHoy) {
+              await this.sqliteService.actualizarCompletado(habito.id, habito.completado);
+            }
+
             this.mostrarToast('✅ Progreso del día guardado correctamente');
           } else {
             this.mostrarToast('ℹ️ El progreso de hoy ya está registrado');

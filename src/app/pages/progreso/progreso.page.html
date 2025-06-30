@@ -1,7 +1,7 @@
 <!-- Titulo -->
 <ion-header>
   <ion-toolbar>
-    <ion-title>Progreso</ion-title>
+    <ion-title>📊 Progreso</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -11,44 +11,30 @@
   <!-- Resumen general -->
   <ion-card>
     <ion-card-header>
-      <ion-card-title>Resumen Semanal</ion-card-title>
+      <ion-card-title>Resumen</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <ion-list>
-        <ion-item>
-          <ion-label>Total hábitos programados</ion-label>
-          <ion-badge slot="end" color="medium">{{ resumen.total }}</ion-badge>
-        </ion-item>
-        <ion-item>
-          <ion-label>Hábitos cumplidos</ion-label>
-          <ion-badge slot="end" color="success">{{ resumen.cumplidos }}</ion-badge>
-        </ion-item>
-        <ion-item>
-          <ion-label>Porcentaje</ion-label>
-          <ion-badge slot="end" color="primary">{{ resumen.porcentaje }}%</ion-badge>
-        </ion-item>
-      </ion-list>
+      <p>Total de días registrados: {{ historial.length }}</p>
+      <p>Días con 100% de cumplimiento: {{ diasCompletos }}</p>
+      <p>Promedio general de cumplimiento: {{ promedioCumplimiento }}%</p>
     </ion-card-content>
   </ion-card>
 
   <!-- Progreso por día -->
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Historial Diario</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-list *ngFor="let dia of historial">
-        <ion-item>
-          <ion-label>
-            <h3>{{ dia.fecha }}</h3>
-            <p>{{ dia.cumplidos }} de {{ dia.total }} hábitos completados</p>
-          </ion-label>
-          <ion-badge [color]="dia.cumplidos === dia.total ? 'success' : 'warning'" slot="end">
-            {{ ((dia.cumplidos / dia.total) * 100) | number: '1.0-0' }}%
-          </ion-badge>
-        </ion-item>
-      </ion-list>
-    </ion-card-content>
-  </ion-card>
+  <ion-list>
+    <ion-list-header>
+      <ion-label>Historial diario</ion-label>
+    </ion-list-header>
+
+    <ion-item *ngFor="let dia of historial">
+      <ion-label>
+        <h2>{{ dia.fecha }}</h2>
+        <p>✅ {{ dia.cumplidos }} / {{ dia.total }}</p>
+        <ion-progress-bar [value]="dia.cumplidos / dia.total" color="success"></ion-progress-bar>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <ion-button expand="full" color="danger" *ngIf="modoDebug" (click)="resetProgreso()">🧹 Borrar Progreso Diario (Modo Prueba)</ion-button>
 
 </ion-content>

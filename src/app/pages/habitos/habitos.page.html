@@ -17,16 +17,16 @@
         <ion-label>{{ categoria }}</ion-label>
       </ion-item-divider>
 
-      <ion-item *ngFor="let habito of filtrarPorCategoria(categoria); let i = index">
+      <ion-item *ngFor="let habito of filtrarPorCategoria(categoria)">
         <ion-label>
           <h2>{{ habito.nombre }}</h2>
           <p>Días: {{ habito.dias.join(', ') }} - Hora: {{ habito.hora }}</p>
         </ion-label>
         <ion-buttons slot="end">
-          <ion-button fill="clear" color="primary" (click)="editarHabito(habito, i)">
+          <ion-button fill="clear" color="primary" (click)="editarHabito(habito)">
             <ion-icon name="create-outline"></ion-icon>
           </ion-button>
-          <ion-button fill="clear" color="danger" (click)="eliminarHabito(i)">
+          <ion-button fill="clear" color="danger" (click)="eliminarHabito(habito.id)">
             <ion-icon name="trash-outline"></ion-icon>
           </ion-button>
         </ion-buttons>
