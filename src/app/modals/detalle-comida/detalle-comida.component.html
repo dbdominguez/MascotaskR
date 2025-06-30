@@ -1,0 +1,16 @@
+<ion-header>
+  <ion-toolbar color="tertiary">
+    <ion-title>{{ categoria?.strCategory }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrar()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-img [src]="categoria?.strCategoryThumb" alt="Imagen categoría" class="detalle-img"></ion-img>
+  <h2 class="ion-text-center">{{ categoria?.strCategory }}</h2>
+  <p>{{ categoria?.strCategoryDescription }}</p>
+</ion-content>
