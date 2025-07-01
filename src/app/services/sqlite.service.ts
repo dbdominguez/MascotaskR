@@ -50,6 +50,7 @@ export class SqliteService {
       0
     ];
     await this.db?.run(query, values);
+    console.log('[SQLite] Hábito guardado correctamente en la base de datos:', habito);
   }
 
   async obtenerHabitosHoy(): Promise<any[]> {

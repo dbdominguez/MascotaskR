@@ -1,6 +1,6 @@
 <ion-header>
-  <ion-toolbar color="tertiary">
-    <ion-title>{{ categoria?.strCategory }}</ion-title>
+  <ion-toolbar color="secondary">
+    <ion-title>🍽️ {{ categoria?.strCategory }}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="cerrar()">
         <ion-icon name="close-outline"></ion-icon>
@@ -10,7 +10,6 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-img [src]="categoria?.strCategoryThumb" alt="Imagen categoría" class="detalle-img"></ion-img>
-  <h2 class="ion-text-center">{{ categoria?.strCategory }}</h2>
+  <img [src]="categoria?.strCategoryThumb" alt="Imagen" style="width: 100%; border-radius: 10px;" />
   <p>{{ categoria?.strCategoryDescription }}</p>
 </ion-content>
