@@ -4,8 +4,13 @@ import { EditarPerfilComponent } from 'src/app/modals/editar-perfil/editar-perfi
 import { ConfiguracionComponent } from 'src/app/modals/configuracion/configuracion.component';
 import { CerrarSesionComponent } from 'src/app/modals/cerrar-sesion/cerrar-sesion.component';
 
+import { Storage } from '@ionic/storage-angular';
+import { SqliteService } from 'src/app/services/sqlite.service';
+
 //Camara
 import { Camera, CameraResultType, CameraSource} from '@capacitor/camera';
+
+
 
 @Component({
   selector: 'app-profile',
@@ -14,7 +19,7 @@ import { Camera, CameraResultType, CameraSource} from '@capacitor/camera';
   standalone: false,
 })
 export class ProfilePage {
-  constructor(private modalCtrl: ModalController) {}
+  constructor(private modalCtrl: ModalController, private storage: Storage,private sqliteService: SqliteService) {}
 
   async abrirEditarPerfil() {
   const modal = await this.modalCtrl.create({
@@ -78,6 +83,23 @@ export class ProfilePage {
   }
 }
 
+
+//Depuracion
+async resetDatos() {
+  // 🔹 1. Limpiar localStorage
+  localStorage.clear();
+
+  // 🔹 2. Limpiar @ionic/storage
+  await this.storage.clear();
+
+  // 🔹 3. Limpiar SQLite
+  if (this.sqliteService.db) {
+    await this.sqliteService.db.execute('DELETE FROM habitos');
+    await this.sqliteService.db.execute('DELETE FROM progreso_diario');
+  }
+
+  console.log('✅ Todos los datos han sido limpiados.');
+}
 
 
 }
