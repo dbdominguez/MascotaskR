@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { Component } from '@angular/core';
+import { ModalController, ToastController } from '@ionic/angular';
+
+import { SqliteService } from 'src/app/services/sqlite.service';
 
 @Component({
   selector: 'app-logros',
@@ -7,59 +9,105 @@ import { ModalController } from '@ionic/angular';
   styleUrls: ['./logros.component.scss'],
   standalone: false,
 })
-export class LogrosComponent implements OnInit {
-  //Listado Logros
+export class LogrosComponent {
   logros = [
     {
       nombre: 'Primer hábito',
       descripcion: 'Has creado tu primer hábito.',
       icono: 'star-outline',
-      desbloqueado: false
+      desbloqueado: false,
+      notificado: false
     },
     {
       nombre: 'Constante',
       descripcion: 'Completaste hábitos 5 días seguidos.',
       icono: 'flame-outline',
-      desbloqueado: false
+      desbloqueado: false,
+      notificado: false
     },
     {
       nombre: 'Maestro de hábitos',
       descripcion: 'Completaste todos tus hábitos en un día.',
       icono: 'trophy-outline',
-      desbloqueado: false
+      desbloqueado: false,
+      notificado: false
     },
     {
-      nombre: 'Explorador',
-      descripcion: 'Entraste a la página de Extras.',
+      nombre: '???',
+      descripcion: 'Miau-tástico.',
       icono: 'rocket-outline',
-      desbloqueado: true
+      desbloqueado: false,
+      notificado: false
     }
   ];
 
-  constructor(private modalCtrl: ModalController) {}
+  mostrarAnimacion = false;
+  logroAnimado: string | null = null;
 
-  ngOnInit() {
-    this.verificarLogros();
+  constructor(private modalCtrl: ModalController, private toastCtrl: ToastController,private sqliteService: SqliteService) {}
+
+  async ngOnInit() {
+    await this.sqliteService.initDB();
+    this.cargarEstadoDesdeStorage();
+    await this.verificarLogros();
   }
 
-  verificarLogros() {
-    const habitos = JSON.parse(localStorage.getItem('habitosHoy') || '[]');
+  async verificarLogros() {
+    const habitos = await this.sqliteService.obtenerHabitosHoy();
     const progreso = JSON.parse(localStorage.getItem('progresoHabitos') || '{}');
 
-    this.logros.forEach(logro => {
+    for (let logro of this.logros) {
+      let cumplido = false;
+
       switch (logro.nombre) {
         case 'Primer hábito':
-          logro.desbloqueado = habitos.length > 0;
+          cumplido = habitos.length > 0;
           break;
         case 'Maestro de hábitos':
-          logro.desbloqueado = habitos.every((h: any) => h.completado);
+          cumplido = habitos.length > 0 && habitos.every((h: any) => h.completado);
           break;
         case 'Constante':
           const dias = Object.keys(progreso).filter(fecha => progreso[fecha].length > 0);
-          logro.desbloqueado = dias.length >= 5;
+          cumplido = dias.length >= 5;
           break;
       }
+
+      if (cumplido && !logro.desbloqueado) {
+        logro.desbloqueado = true;
+        logro.notificado = true;
+        this.mostrarAnimacionLogro(logro);
+      }
+    }
+
+    this.guardarEstadoEnStorage();
+  }
+
+  async mostrarAnimacionLogro(logro: any) {
+    this.logroAnimado = logro.nombre;
+    this.mostrarAnimacion = true;
+
+    const toast = await this.toastCtrl.create({
+      message: `🎉 ¡Nuevo logro desbloqueado: ${logro.nombre}!`,
+      duration: 2500,
+      color: 'success'
     });
+    toast.present();
+
+    setTimeout(() => {
+      this.mostrarAnimacion = false;
+      this.logroAnimado = null;
+    }, 2000);
+  }
+
+  guardarEstadoEnStorage() {
+    localStorage.setItem('logrosDesbloqueados', JSON.stringify(this.logros));
+  }
+
+  cargarEstadoDesdeStorage() {
+    const guardados = JSON.parse(localStorage.getItem('logrosDesbloqueados') || '[]');
+    if (guardados.length) {
+      this.logros = guardados;
+    }
   }
 
   cerrar() {

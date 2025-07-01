@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar color="secondary">
+  <ion-toolbar color="tertiary">
     <ion-title>🏆 Logros</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="cerrar()">
@@ -10,11 +10,15 @@
 </ion-header>
 
 <ion-content class="ion-padding">
+  <div *ngIf="mostrarAnimacion" class="animacion-logro">
+    <img src="assets/animaciones/celebracion.gif" alt="Logro desbloqueado" />
+  </div>
+
   <ion-list>
     <ion-item *ngFor="let logro of logros">
       <ion-icon [name]="logro.icono" slot="start" [color]="logro.desbloqueado ? 'success' : 'medium'"></ion-icon>
       <ion-label>
-        <h2>{{ logro.nombre }}</h2>
+        <h3>{{ logro.nombre }}</h3>
         <p>{{ logro.descripcion }}</p>
       </ion-label>
       <ion-badge *ngIf="logro.desbloqueado" color="success">✓</ion-badge>
