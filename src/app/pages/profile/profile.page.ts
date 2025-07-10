@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ModalController, NavController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
 import { EditarPerfilComponent } from 'src/app/modals/editar-perfil/editar-perfil.component';
 import { ConfiguracionComponent } from 'src/app/modals/configuracion/configuracion.component';
 import { CerrarSesionComponent } from 'src/app/modals/cerrar-sesion/cerrar-sesion.component';
@@ -19,21 +19,60 @@ import { Camera, CameraResultType, CameraSource} from '@capacitor/camera';
   standalone: false,
 })
 export class ProfilePage {
-  constructor(private modalCtrl: ModalController, private storage: Storage,private sqliteService: SqliteService) {}
+  perfil: any = {
+    apodo: 'Guardian Estelar',
+    fechaNacimiento: '',
+    correo: '',
+    genero: ''
+  };
+
+  fotoPerfil: string = '';
+
+  constructor(
+    private modalCtrl: ModalController,
+    private storage: Storage,
+    private sqliteService: SqliteService
+  ) {}
+
+  async ionViewWillEnter() {
+    console.log('Actualizando perfil...');
+
+    const datos = await this.storage.get('usuario');
+    if (datos) {
+      this.perfil.nombre = datos.apodo || 'Guardian Estelar';
+      this.perfil.fechaNacimiento = datos.fecha_nacimiento || '';
+      this.perfil.correo = datos.correo || '';
+      this.perfil.genero = datos.genero || '';
+    }
+
+    this.fotoPerfil = await this.storage.get('fotoPerfil') || '';
+  }
+
+  async tomarFoto() {
+    const image = await Camera.getPhoto({
+      quality: 80,
+      allowEditing: false,
+      resultType: CameraResultType.DataUrl,
+      source: CameraSource.Camera
+    });
+
+    this.fotoPerfil = image.dataUrl!;
+    await this.storage.set('fotoPerfil', this.fotoPerfil);
+  }
 
   async abrirEditarPerfil() {
-  const modal = await this.modalCtrl.create({
-    component: EditarPerfilComponent
-  });
+    const modal = await this.modalCtrl.create({
+      component: EditarPerfilComponent
+    });
 
-  modal.onDidDismiss().then((result) => {
-    if (result.data === 'actualizado') {
-      this.ionViewWillEnter();
-    }
-  });
+    modal.onDidDismiss().then((result) => {
+      if (result.data === 'actualizado') {
+        this.ionViewWillEnter(); 
+      }
+    });
 
-  await modal.present();
-}
+    await modal.present();
+  }
 
   async abrirConfiguracion() {
     const modal = await this.modalCtrl.create({
@@ -48,40 +87,6 @@ export class ProfilePage {
     });
     await modal.present();
   }
-
-  perfil: any = {
-  nombre: 'Guardian Estelar',
-  fechaNacimiento: '',
-  correo: '',
-  genero: ''
-};
-
-  fotoPerfil: string = '';
-
-  async tomarFoto() {
-    const image = await Camera.getPhoto({
-      quality: 80,
-      allowEditing: false,
-      resultType: CameraResultType.DataUrl,
-      source: CameraSource.Camera
-    });
-
-    this.fotoPerfil = image.dataUrl!;
-    localStorage.setItem('fotoPerfil', this.fotoPerfil);
-  }
-
-  ionViewWillEnter() {
-  console.log('actualizando perfil');
-  const guardado = localStorage.getItem('perfilUsuario');
-  if (guardado) {
-    const datos = JSON.parse(guardado);
-    this.perfil.nombre = datos.nombre || 'Guardian Estelar';
-    this.perfil.fechaNacimiento = datos.fechaNacimiento || '';
-    this.perfil.correo = datos.correo || '';
-    this.perfil.genero = datos.genero || '';
-    this.fotoPerfil = localStorage.getItem('fotoPerfil') || '';
-  }
-}
 
 
 //Depuracion

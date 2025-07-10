@@ -9,7 +9,7 @@ export class SqliteService {
   db: SQLiteDBConnection | null = null;
 
   constructor() {
-    this.sqlite = new SQLiteConnection(CapacitorSQLite as any); // ← aquí el cambio
+    this.sqlite = new SQLiteConnection(CapacitorSQLite as any);
   }
 
   async initDB() {
@@ -34,7 +34,44 @@ export class SqliteService {
       total INTEGER,
       cumplidos INTEGER
       );
+
+      CREATE TABLE IF NOT EXISTS usuarios (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      nombre TEXT NOT NULL,
+      genero TEXT NOT NULL,
+      fecha_nacimiento TEXT NOT NULL,
+      correo TEXT NOT NULL UNIQUE,
+      clave TEXT NOT NULL,
+      apodo TEXT 
+      );
     `);
+  }
+
+    public async getDB(): Promise<SQLiteDBConnection> {
+    if (!this.db) {
+      await this.initDB();
+    }
+    return this.db!;
+  }
+
+
+  async existeUsuario(correo: string): Promise<boolean> {
+    const db = await this.getDB();
+    const result = await db.query('SELECT * FROM usuarios WHERE correo = ?', [correo]);
+
+    if (result.values && result.values.length > 0) {
+      return true;
+    }
+    return false;
+  }
+
+  async registrarUsuario(nombre: string, genero: string, fechaNacimiento: string, correo: string, clave: string): Promise<void> {
+    const db = await this.getDB();
+    await db.run(
+      `INSERT INTO usuarios (nombre, genero, fecha_nacimiento, correo, clave)
+       VALUES (?, ?, ?, ?, ?)`,
+      [nombre, genero, fechaNacimiento, correo, clave]
+    );
   }
 
   async agregarHabito(habito: any) {
