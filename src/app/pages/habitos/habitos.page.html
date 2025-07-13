@@ -67,7 +67,7 @@
 
         <ion-item>
           <ion-label>Hora</ion-label>
-          <ion-datetime presentation="time" [(ngModel)]="nuevoHabito.hora"></ion-datetime>
+          <ion-datetime presentation="time" (ionChange)="formatearHora('' + $event.detail.value)"></ion-datetime>
         </ion-item>
 
         <ion-button expand="block" (click)="guardarHabito()">
