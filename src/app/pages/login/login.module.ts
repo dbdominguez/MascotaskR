@@ -9,13 +9,16 @@ import { LoginPageRoutingModule } from './login-routing.module';
 
 import { LoginPage } from './login.page';
 
+import { RouterModule } from '@angular/router';
+
 @NgModule({
   imports: [
     ReactiveFormsModule,
     CommonModule,
     FormsModule,
     IonicModule,
-    LoginPageRoutingModule
+    LoginPageRoutingModule,
+    RouterModule
   ],
   declarations: [LoginPage]
 })

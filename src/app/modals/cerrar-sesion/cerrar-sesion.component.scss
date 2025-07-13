@@ -26,4 +26,12 @@
     margin-top: 16px;
     border-radius: 10px;
   }
+
+  .modal-centro {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    gap: 1rem;
+  }
 }

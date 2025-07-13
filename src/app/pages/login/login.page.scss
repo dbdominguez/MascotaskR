@@ -38,3 +38,12 @@ ion-content {
     font-weight: bold;
     text-align: center;
   }
+
+.enlace-registro {
+  display: inline-block;
+  margin-top: 12px;
+  color: var(--ion-color-light);
+  text-decoration: underline;
+  font-size: 0.95rem;
+  cursor: pointer;
+}

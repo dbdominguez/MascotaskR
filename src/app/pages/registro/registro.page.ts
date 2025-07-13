@@ -11,7 +11,7 @@ import { SqliteService } from 'src/app/services/sqlite.service';
   styleUrls: ['./registro.page.scss'],
   standalone: false,
 })
-export class RegisterPage {
+export class RegistroPage {
   registerForm: FormGroup;
 
   constructor(private fb: FormBuilder,private router: Router,private alertCtrl: AlertController,private sqliteService: SqliteService) {
