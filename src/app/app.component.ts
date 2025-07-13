@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { SqliteService } from './services/sqlite.service';
 import { Storage } from '@ionic/storage-angular';
+import { LocalNotifications } from '@capacitor/local-notifications';
 
 @Component({
   selector: 'app-root',
@@ -16,5 +17,6 @@ export class AppComponent {
   async ngOnInit() {
     await this.storage.create();
     await this.sqliteService.initDB();
+    await LocalNotifications.requestPermissions();
   }
 }

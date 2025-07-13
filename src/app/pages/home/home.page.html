@@ -2,7 +2,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button id="misiones-alert">
+      <ion-button id="misiones-alert" (click)="actualizarMisiones()">
         <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
       </ion-button>
       <ion-alert trigger="misiones-alert" header="Misiones Diarias" subHeader="¡Sigue así!" [buttons]="alertButtons" [inputs]="alertInputs"></ion-alert>

@@ -74,20 +74,32 @@ export class SqliteService {
     );
   }
 
-  async agregarHabito(habito: any) {
+  async agregarHabito(habito: any): Promise<number> {
     const query = `
       INSERT INTO habitos (nombre, categoria, hora, dias, completado)
       VALUES (?, ?, ?, ?, ?)
     `;
-    const values = [
+   const values = [
       habito.nombre,
       habito.categoria,
       habito.hora,
-      habito.dias.join(','),
+      habito.dias.join(','), 
       0
     ];
-    await this.db?.run(query, values);
-    console.log('[SQLite] Hábito guardado correctamente en la base de datos:', habito);
+
+    const result = await this.db?.run(query, values);
+
+    const idInsertado =
+      (result as any)?.lastInsertRowid ??
+      (result as any)?.changes?.lastId ??
+      (result as any)?.changes?.lastInsertRowid;
+
+    if (typeof idInsertado !== 'number') {
+      throw new Error('❌ No se pudo obtener el ID del hábito insertado.');
+    }
+
+    console.log('[SQLite] Hábito guardado con ID:', idInsertado);
+    return idInsertado;
   }
 
   async obtenerHabitosHoy(): Promise<any[]> {
@@ -142,6 +154,23 @@ export class SqliteService {
   async obtenerHistorialProgreso(): Promise<any[]> {
     const result = await this.db?.query(`SELECT * FROM progreso_diario ORDER BY fecha DESC`);
     return result?.values || [];
+  }
+
+  //obtener progreso para misiones diarias
+  async obtenerProgresoPorFecha(fecha: string): Promise<{ total: number, cumplidos: number } | null> {
+    const result = await this.db?.query(
+      `SELECT total, cumplidos FROM progreso_diario WHERE fecha = ?`,
+      [fecha]
+    );
+
+    if (result?.values?.length) {
+      return {
+        total: result.values[0].total,
+        cumplidos: result.values[0].cumplidos
+      };
+    }
+
+    return null;
   }
   
 //Extra

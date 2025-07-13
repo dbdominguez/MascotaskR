@@ -101,6 +101,7 @@ async resetDatos() {
   if (this.sqliteService.db) {
     await this.sqliteService.db.execute('DELETE FROM habitos');
     await this.sqliteService.db.execute('DELETE FROM progreso_diario');
+    await this.sqliteService.db.execute('DELETE FROM usuarios');
   }
 
   console.log('✅ Todos los datos han sido limpiados.');

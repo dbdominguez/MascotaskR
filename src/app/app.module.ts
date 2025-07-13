@@ -22,7 +22,7 @@ import { ConfiguracionComponent } from './modals/configuracion/configuracion.com
 import { CerrarSesionComponent } from './modals/cerrar-sesion/cerrar-sesion.component';
 import { LogrosComponent } from './modals/logros/logros.component';
 import { DetalleComidaComponent } from 'src/app/modals/detalle-comida/detalle-comida.component';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -39,7 +39,8 @@ import { FormsModule } from '@angular/forms';
     AppRoutingModule,
     FormsModule,
     BrowserAnimationsModule,
-    IonicStorageModule.forRoot()
+    IonicStorageModule.forRoot(),
+    ReactiveFormsModule
   ],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, provideHttpClient(), AuthGuard],
   bootstrap: [AppComponent],

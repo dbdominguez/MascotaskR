@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
 import { SqliteService } from 'src/app/services/sqlite.service';
 
+import { LocalNotifications } from '@capacitor/local-notifications';
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.page.html',
@@ -26,7 +28,7 @@ export class HomePage {
   frasesMascota: string[] = [];
 
 
-  constructor(private router: Router, private alertCtrl: AlertController, private toastCtrl: ToastController, private sqliteService: SqliteService) {}
+  constructor(private router: Router, private alertCtrl: AlertController, private toastCtrl: ToastController, private sqliteService: SqliteService, private alertController: AlertController) {}
 
 
   //Dia Actual
@@ -141,32 +143,47 @@ async guardarResumenDelDia() {
     this.router.navigate(['/profile']);
 }
 
-  //Pestaña Misiones
+  //Alerta Misiones
   public alertButtons = ['OK'];
-  public alertInputs = [
-    {
-      type: 'checkbox',
-      label: 'Cumple con al menos 1 hábitos hoy',
-      value: 'habitos_2',
-      checked: false,
-      disabled: true
-    },
-    {
-      type: 'checkbox',
-      label: 'Cumple con todos los hábitos hoy',
-      value: 'habitos_todos',
-      checked: false,
-      disabled: true
-    },
-    {
-      type: 'checkbox',
-      label: 'Entra a la aplicación por primera vez',
-      value: 'entrada_1',
-      checked: true,
-      disabled: true
-    }
-  ];
+  public alertInputs: any[] = [];
 
-  
+  //Pestaña Misiones
+  async actualizarMisiones() {
+    const hoy = new Date().toISOString().split('T')[0];
+    const habitos = await this.sqliteService.obtenerHabitosHoy();
+    const progreso = await this.sqliteService.obtenerProgresoPorFecha(hoy);
+
+    const completados = progreso?.cumplidos ?? 0;
+    const total = progreso?.total ?? habitos.length;
+
+    this.alertInputs = [
+      {
+        type: 'checkbox',
+        label: 'Cumple con todos los hábitos hoy',
+        value: 'habitos_todos',
+        checked: total > 0 && completados === total,
+        disabled: true
+      },
+      {
+        type: 'checkbox',
+        label: 'Entra a la aplicación por primera vez en el dia',
+        value: 'entrada_1',
+        checked: true,
+        disabled: true
+      }
+    ];
+  }
+
+  async mostrarMisiones() {
+    await this.actualizarMisiones(); 
+
+    const alert = await this.alertController.create({
+      header: 'Misiones Diarias',
+      inputs: this.alertInputs,
+      buttons: ['OK']
+    });
+
+    await alert.present();
+  }
 }
 
