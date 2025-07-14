@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { SqliteService } from 'src/app/services/sqlite.service';
 
+import { AuthenService } from 'src/app/services/authen.service';
+
 
 @Component({
   selector: 'app-registro',
@@ -14,7 +16,7 @@ import { SqliteService } from 'src/app/services/sqlite.service';
 export class RegistroPage {
   registerForm: FormGroup;
 
-  constructor(private fb: FormBuilder,private router: Router,private alertCtrl: AlertController,private sqliteService: SqliteService) {
+  constructor(private fb: FormBuilder,private router: Router,private alertCtrl: AlertController,private sqliteService: SqliteService, private authService: AuthenService ) {
     this.registerForm = this.fb.group({
       nombre: ['', Validators.required],
       genero: ['', Validators.required],
@@ -41,6 +43,9 @@ export class RegistroPage {
 
     await this.sqliteService.registrarUsuario(nombre, genero, fecha_nacimiento, correo, clave);
 
-    this.router.navigate(['/home']);
+    // 🔐 Autenticación manual después del registro
+    await this.authService.login(correo, clave);
+
+    this.router.navigate(['tabs/home']);
   }
 }
