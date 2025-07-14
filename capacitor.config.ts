@@ -1,9 +1,13 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
+  appId: 'com.mascotask.app',
   appName: 'MascotaskR',
-  webDir: 'www'
+  webDir: 'www',
+  ios: {
+    contentInset: 'always'
+  },
+  cordova: {}
 };
 
 export default config;

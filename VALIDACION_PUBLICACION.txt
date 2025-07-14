@@ -1,0 +1,11 @@
+✅ VALIDACIÓN DEL PROCESO DE PUBLICACIÓN
+
+- Se generó el archivo .aab en: android/app/build/outputs/bundle/release/app-release.aab
+- Se creó una key con:
+  - Nombre del archivo: mascotask-key.jks
+  - Alias: mascotask
+  - Contraseña: ********
+- Se firmó el archivo .aab usando jarsigner.
+- Se verificó la firma correctamente.
+
+Este bundle está listo para su posterior publicación en Google Play.
