@@ -2,8 +2,14 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
-import { SqliteService } from 'src/app/services/sqlite.service';
 
+interface Usuario {
+  nombre: string;
+  genero: string;
+  fecha_nacimiento: string;
+  correo: string;
+  clave: string;
+}
 
 @Component({
   selector: 'app-registro',
@@ -14,7 +20,11 @@ import { SqliteService } from 'src/app/services/sqlite.service';
 export class RegistroPage {
   registerForm: FormGroup;
 
-  constructor(private fb: FormBuilder,private router: Router,private alertCtrl: AlertController,private sqliteService: SqliteService) {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private alertCtrl: AlertController,
+  ) {
     this.registerForm = this.fb.group({
       nombre: ['', Validators.required],
       genero: ['', Validators.required],
@@ -24,23 +34,42 @@ export class RegistroPage {
     });
   }
 
-  async onSubmit() {
-    const { nombre, genero, fecha_nacimiento, correo, clave } = this.registerForm.value;
-
-    const existe = await this.sqliteService.existeUsuario(correo);
-
-    if (existe) {
-      const alert = await this.alertCtrl.create({
-        header: 'Error',
-        message: 'Este correo ya está registrado.',
-        buttons: ['OK'],
-      });
-      await alert.present();
-      return;
-    }
-
-    await this.sqliteService.registrarUsuario(nombre, genero, fecha_nacimiento, correo, clave);
-
-    this.router.navigate(['/home']);
+  // Obtiene el arreglo de usuarios desde localStorage
+  obtenerUsuarios(): Usuario[] {
+    const usuariosStr = localStorage.getItem('usuarios');
+    return usuariosStr ? JSON.parse(usuariosStr) : [];
   }
+
+  // Guarda el arreglo actualizado en localStorage
+  guardarUsuarios(usuarios: Usuario[]) {
+    localStorage.setItem('usuarios', JSON.stringify(usuarios));
+  }
+
+async onSubmit() {
+  const { nombre, genero, fecha_nacimiento, correo, clave } = this.registerForm.value;
+
+  const usuarios = this.obtenerUsuarios();
+
+  const existe = usuarios.some(u => u.correo === correo);
+
+  if (existe) {
+    const alert = await this.alertCtrl.create({
+      header: 'Error',
+      message: 'Este correo ya está registrado.',
+      buttons: ['OK'],
+    });
+    await alert.present();
+    return;
+  }
+
+  const nuevoUsuario = { nombre, genero, fecha_nacimiento, correo, clave };
+
+  usuarios.push(nuevoUsuario);
+  this.guardarUsuarios(usuarios);
+
+  // ✅ Guardar usuario actual (simulación de sesión iniciada)
+  localStorage.setItem('usuarioActual', JSON.stringify(nuevoUsuario));
+
+  this.router.navigate(['/home']);
+}
 }

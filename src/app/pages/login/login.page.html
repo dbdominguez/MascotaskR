@@ -12,7 +12,7 @@
 
     <ion-item>
       <ion-label position="floating">Email</ion-label>
-      <ion-input formControlName="email" type="text"></ion-input>
+      <ion-input formControlName="email" type="text" data-testid="email-input"></ion-input>
     </ion-item>
     <ion-note color="danger" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
       Ingresar email válido
@@ -20,7 +20,7 @@
 
     <ion-item>
       <ion-label position="floating">Contraseña</ion-label>
-      <ion-input formControlName="clave" type="password"></ion-input>
+      <ion-input formControlName="clave" type="password" data-testid="clave-input"></ion-input>
     </ion-item>
     <ion-note color="danger" *ngIf="loginForm.get('clave')?.invalid && loginForm.get('clave')?.touched">
       Ingresar contraseña alfanumérica que contenga entre 8 a 12 carácteres

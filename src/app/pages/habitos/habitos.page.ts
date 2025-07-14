@@ -1,10 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { SqliteService } from 'src/app/services/sqlite.service';
+import { Component } from '@angular/core';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { Storage } from '@ionic/storage-angular';
 
 interface Habito {
-  id?: number;
+  id: number;
   nombre: string;
   dias: string[];
   hora: string;
@@ -19,108 +18,77 @@ interface Habito {
   standalone: false,
 })
 export class HabitosPage {
-
-
-  constructor(private sqliteService: SqliteService, private storage: Storage) {}
-
-  
   formularioVisible = false;
   mostrarAnimacion = false;
-  
 
-  categorias = ['❤️ Salud', '🍴 Alimentación', '💪 Ejercicio', '🎱 Otro'];
+  categorias = [' Salud', ' Alimentación', ' Ejercicio', ' Otro'];
   diasSemana = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 
-  habitosGuardados: any[] = [];
+  habitosGuardados: Habito[] = [];
 
   nuevoHabito: Habito = {
+    id: 0,
     nombre: '',
     dias: [],
     hora: '',
     categoria: '',
-    completado: false
-};
+    completado: false,
+  };
 
   modoEdicion = false;
   indiceEdicion = -1;
 
-formatearHora(valor: string) {
-  const hora = valor.split('T')[1]?.substring(0, 5);
-  if (hora) {
-    this.nuevoHabito.hora = hora;
-  } else {
-    console.warn('⚠️ Hora inválida recibida:', valor);
-  }
-}
+  constructor(private storage: Storage) {}
 
   async ionViewWillEnter() {
-    const datos = await this.sqliteService.obtenerHabitosHoy();
-
-    this.habitosGuardados = datos.map(h => ({
-      ...h,
-      dias: h.dias ? h.dias.split(',') : [] 
-    }));
+    const data = localStorage.getItem('habitos');
+    this.habitosGuardados = data ? JSON.parse(data) : [];
   }
 
   abrirFormulario() {
     this.modoEdicion = false;
     this.indiceEdicion = -1;
     this.nuevoHabito = {
+      id: 0,
       nombre: '',
       dias: [],
       hora: '',
       categoria: '',
-      completado: false
+      completado: false,
     };
     this.formularioVisible = true;
   }
 
+
   async guardarHabito() {
+    let habitos = JSON.parse(localStorage.getItem('habitos') || '[]');
+
     if (!this.modoEdicion) {
-      const nuevo = {
-        nombre: this.nuevoHabito.nombre,
-        categoria: this.nuevoHabito.categoria,
-        hora: this.nuevoHabito.hora,
-        dias: this.nuevoHabito.dias,
-      };
-
-      // Guardar y obtener ID
-      const id = await this.sqliteService.agregarHabito(nuevo);
-
-      //Verificar
-      if (!id || isNaN(id)) {
-        console.error('❌ Error: ID inválido recibido al guardar el hábito:', id);
-        return;
-      }
-
-      // Programar notificación
-      await this.programarNotificacion(nuevo, id);
-
+      const nuevoId = habitos.length ? habitos[habitos.length - 1].id + 1 : 1;
+      const nuevo = { ...this.nuevoHabito, id: nuevoId };
+      habitos.push(nuevo);
+      await this.programarNotificacion(nuevo, nuevoId);
       this.mostrarAnimacion = true;
-      setTimeout(() => {
-        this.mostrarAnimacion = false;
-      }, 1500);
+      setTimeout(() => (this.mostrarAnimacion = false), 1500);
     } else {
-      if (this.nuevoHabito.id) {
-        const id = this.nuevoHabito.id;
-
-        await LocalNotifications.cancel({ notifications: [{ id }] });
-        await this.sqliteService.editarHabito(this.nuevoHabito);
-        await this.programarNotificacion(this.nuevoHabito, id);
-
-      } else {
-        console.warn('No se pudo editar: hábito sin ID');
+      const index = habitos.findIndex((h: Habito) => h.id === this.nuevoHabito.id);
+      if (index !== -1) {
+        await LocalNotifications.cancel({ notifications: [{ id: this.nuevoHabito.id }] });
+        habitos[index] = { ...this.nuevoHabito };
+        await this.programarNotificacion(this.nuevoHabito, this.nuevoHabito.id);
       }
     }
 
+    localStorage.setItem('habitos', JSON.stringify(habitos));
     this.formularioVisible = false;
     this.modoEdicion = false;
     this.nuevoHabito = {
+      id: 0,
       nombre: '',
       dias: [],
       hora: '',
       categoria: '',
-      completado: false
+      completado: false,
     };
     await this.ionViewWillEnter();
   }
@@ -132,17 +100,18 @@ formatearHora(valor: string) {
   }
 
   async eliminarHabito(id: number) {
+    let habitos = JSON.parse(localStorage.getItem('habitos') || '[]');
+    habitos = habitos.filter((h: Habito) => h.id !== id);
     await LocalNotifications.cancel({ notifications: [{ id }] });
-    await this.sqliteService.eliminarHabito(id);
+    localStorage.setItem('habitos', JSON.stringify(habitos));
     await this.ionViewWillEnter();
-}
-
-  filtrarPorCategoria(categoria: string): any[] {
-    return this.habitosGuardados.filter(h => h.categoria === categoria);
   }
 
-  //Notificaciones Habitos
-   async programarNotificacion(habito: any, id: number) {
+  filtrarPorCategoria(categoria: string): Habito[] {
+    return this.habitosGuardados.filter((h) => h.categoria === categoria);
+  }
+
+  async programarNotificacion(habito: Habito, id: number) {
     await this.storage.create();
 
     const notificacionesActivas = await this.storage.get('notificacionesActivas');
@@ -152,9 +121,9 @@ formatearHora(valor: string) {
     }
 
     const permStatus = await LocalNotifications.requestPermissions();
-      if (permStatus.display !== 'granted') {
-        console.warn('🔕 Permiso para notificaciones no concedido');
-        return;
+    if (permStatus.display !== 'granted') {
+      console.warn('🔕 Permiso para notificaciones no concedido');
+      return;
     }
 
     if (!id || isNaN(id)) {
@@ -165,39 +134,25 @@ formatearHora(valor: string) {
     const [hora, minuto] = habito.hora.split(':').map((val: string) => parseInt(val));
     let fecha = new Date();
     fecha.setHours(hora, minuto, 0, 0);
-  
+
     if (fecha <= new Date()) {
       fecha.setDate(fecha.getDate() + 1);
     }
 
-    console.log('⏰ Hora programada local:', fecha.toString());
-
-    console.log('🧪 Notificación programada con:', {
-      id,
-      title: `📌 Recordatorio de hábito`,
-      body: `Es momento de: ${habito.nombre}`,
-      fecha,
-      fechaISO: fecha.toISOString(),
-      horaOriginal: habito.hora
-    });
-
     await LocalNotifications.schedule({
       notifications: [
         {
-          id: id,
+          id,
           title: '📌 Recordatorio de hábito',
           body: `Es momento de: ${habito.nombre}`,
           schedule: {
             at: fecha,
             repeats: true,
-          }
-        }
-      ]
+          },
+        },
+      ],
     });
 
     console.log(`🔔 Notificación programada para ${habito.nombre} a las ${habito.hora}`);
-    
-    const pendientes = await LocalNotifications.getPending();
-    console.log('🕑 Notificaciones pendientes:', pendientes);
   }
 }

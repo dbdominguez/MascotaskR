@@ -6,7 +6,8 @@
 
 <ion-content class="ion-padding">
 
-  <ion-button expand="block" (click)="abrirFormulario()">
+  <!-- BOTÓN para abrir el formulario -->
+  <ion-button expand="block" (click)="abrirFormulario()" data-testid="btn-abrir-formulario">
     ➕ Agregar nuevo hábito
   </ion-button>
 
@@ -45,34 +46,41 @@
           </ion-buttons>
         </ion-toolbar>
       </ion-header>
+
       <ion-content class="ion-padding">
+
+        <!-- INPUT NOMBRE -->
         <ion-item>
           <ion-label position="floating">Nombre del hábito</ion-label>
-          <ion-input [(ngModel)]="nuevoHabito.nombre"></ion-input>
+          <ion-input [(ngModel)]="nuevoHabito.nombre" data-testid="input-nombre"></ion-input>
         </ion-item>
 
-        <ion-item>
-          <ion-label>Categoría</ion-label>
-          <ion-select [(ngModel)]="nuevoHabito.categoria">
-            <ion-select-option *ngFor="let cat of categorias" [value]="cat">{{ cat }}</ion-select-option>
-          </ion-select>
-        </ion-item>
+        <!-- SELECT CATEGORÍA -->
+<ion-select interface="popover" [(ngModel)]="nuevoHabito.categoria" data-testid="select-categoria">
+  <ion-select-option *ngFor="let cat of categorias" [value]="cat">{{ cat }}</ion-select-option>
+</ion-select>
 
-        <ion-item>
-          <ion-label>Días</ion-label>
-          <ion-select multiple interface="popover" [(ngModel)]="nuevoHabito.dias">
-            <ion-select-option *ngFor="let dia of diasSemana" [value]="dia">{{ dia }}</ion-select-option>
-          </ion-select>
-        </ion-item>
+        <!-- SELECT DÍAS -->
+<ion-select multiple interface="popover" [(ngModel)]="nuevoHabito.dias" data-testid="select-dias">
+  <ion-select-option *ngFor="let dia of diasSemana" [value]="dia">{{ dia }}</ion-select-option>
+</ion-select>
 
-        <ion-item>
-          <ion-label>Hora</ion-label>
-          <ion-datetime presentation="time" (ionChange)="formatearHora('' + $event.detail.value)"></ion-datetime>
-        </ion-item>
+        <!-- SELECT HORA -->
+<ion-item>
+  <ion-label>Hora</ion-label>
+  <input
+    type="time"
+    [(ngModel)]="nuevoHabito.hora"
+    data-testid="input-hora"
+    class="ion-input"
+  />
+</ion-item>
 
-        <ion-button expand="block" (click)="guardarHabito()">
+        <!-- BOTÓN GUARDAR -->
+        <ion-button expand="block" (click)="guardarHabito()" data-testid="btn-guardar">
           {{ modoEdicion ? 'Actualizar' : 'Guardar' }}
         </ion-button>
+
       </ion-content>
     </ng-template>
   </ion-modal>
@@ -81,4 +89,3 @@
     ✅ ¡Nuevo hábito agregado!
   </div>
 </ion-content>
-
